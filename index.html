@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Trip Expenses</title>
+  <title>Gastos de Viaje</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -412,108 +412,115 @@
 <!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <div class="login-box">
-    <div class="login-stamp">Private</div>
-    <div class="login-title">Trip Expenses</div>
-    <p class="login-sub">Enter password to continue</p>
+    <div class="login-stamp">Privado</div>
+    <div class="login-title">Gastos de Viaje</div>
+    <p class="login-sub">Ingresá la contraseña para continuar</p>
     <div class="login-field">
       <input type="password" id="passwordInput" placeholder="••••••••••••" autocomplete="current-password" />
     </div>
     <div class="login-error" id="loginError"></div>
-    <button class="login-btn" id="loginBtn">Unlock →</button>
+    <button class="login-btn" id="loginBtn">Ingresar →</button>
   </div>
 </div>
 
 <div class="page">
   <header>
-    <div class="stamp">Expense Ledger</div>
-    <h1>Trip Expenses</h1>
-    <p class="subtitle">Track every penny, every adventure</p>
+    <div class="stamp">Registro de Gastos</div>
+    <h1>Gastos de Viaje</h1>
+    <p class="subtitle">Cada peso, cada aventura</p>
   </header>
 
   <div class="card">
-    <div class="card-title">New Entry</div>
+    <div class="card-title">Nuevo Gasto</div>
     <form id="expenseForm">
       <div class="grid-2" style="margin-bottom:16px">
         <div class="field">
-          <label>Trip Name</label>
-          <input type="text" id="trip_name" placeholder="e.g. Tokyo 2025" required />
+          <label>Nombre del Viaje</label>
+          <input type="text" id="trip_name" placeholder="ej. Bariloche 2025" required />
         </div>
         <div class="field">
-          <label>Date</label>
+          <label>Fecha</label>
           <input type="date" id="date" required />
         </div>
       </div>
-      <div class="grid-3" style="margin-bottom:16px">
+      <div class="grid-2" style="margin-bottom:16px">
         <div class="field">
-          <label>Amount</label>
+          <label>¿Quién pagó?</label>
+          <input type="text" id="paid_by" placeholder="ej. Martín" required />
+        </div>
+        <div class="field">
+          <label>Categoría</label>
+          <select id="category">
+            <option value="comida">🍜 Comida y Bebidas</option>
+            <option value="transporte">✈️ Transporte</option>
+            <option value="alojamiento">🏨 Alojamiento</option>
+            <option value="actividades">🎭 Actividades</option>
+            <option value="compras">🛍️ Compras</option>
+            <option value="otro">📦 Otro</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="field">
+          <label>Monto</label>
           <div class="amount-wrap">
             <span class="currency-symbol">$</span>
             <input type="number" id="amount" placeholder="0.00" step="0.01" min="0" required />
           </div>
         </div>
         <div class="field">
-          <label>Currency</label>
+          <label>Moneda</label>
           <select id="currency">
-            <option value="USD">USD $</option>
-            <option value="EUR">EUR €</option>
-            <option value="GBP">GBP £</option>
-            <option value="JPY">JPY ¥</option>
-            <option value="ARS">ARS $</option>
-            <option value="BRL">BRL R$</option>
-            <option value="MXN">MXN $</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Category</label>
-          <select id="category">
-            <option value="food">🍜 Food & Drinks</option>
-            <option value="transport">✈️ Transport</option>
-            <option value="accommodation">🏨 Accommodation</option>
-            <option value="activities">🎭 Activities</option>
-            <option value="shopping">🛍️ Shopping</option>
-            <option value="other">📦 Other</option>
+            <option value="ARS" selected>ARS $ — Peso Argentino</option>
+            <option value="USD">USD $ — Dólar</option>
+            <option value="EUR">EUR € — Euro</option>
+            <option value="BRL">BRL R$ — Real</option>
+            <option value="UYU">UYU $ — Peso Uruguayo</option>
+            <option value="CLP">CLP $ — Peso Chileno</option>
+            <option value="GBP">GBP £ — Libra</option>
           </select>
         </div>
       </div>
       <div class="field full" style="margin-bottom:20px">
-        <label>Description (optional)</label>
-        <textarea id="description" placeholder="What was this expense for?"></textarea>
+        <label>Descripción (opcional)</label>
+        <textarea id="description" placeholder="¿En qué fue este gasto?"></textarea>
       </div>
-      <button type="submit" class="btn" id="submitBtn">+ Log Expense</button>
+      <button type="submit" class="btn" id="submitBtn">+ Registrar Gasto</button>
     </form>
   </div>
 
   <div class="expenses-section">
     <div class="section-header">
-      <div class="section-title">Expense Log</div>
-      <span class="count-badge" id="countBadge">loading...</span>
+      <div class="section-title">Registro de Gastos</div>
+      <span class="count-badge" id="countBadge">cargando...</span>
     </div>
 
     <div class="summary-bar" id="summaryBar" style="display:none">
       <div class="summary-item">
-        <span class="summary-label">Total Entries</span>
+        <span class="summary-label">Total Gastos</span>
         <span class="summary-value" id="totalCount">0</span>
       </div>
       <div class="summary-item">
-        <span class="summary-label">Trips Tracked</span>
+        <span class="summary-label">Viajes</span>
         <span class="summary-value" id="tripsCount">0</span>
       </div>
       <div class="summary-item">
-        <span class="summary-label">Latest Trip</span>
+        <span class="summary-label">Último Viaje</span>
         <span class="summary-value" id="latestTrip" style="font-size:1rem">—</span>
       </div>
     </div>
 
     <div class="table-wrap">
-      <div class="loading" id="loadingState">Loading expenses...</div>
+      <div class="loading" id="loadingState">Cargando gastos...</div>
       <table id="expenseTable" style="display:none">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Trip</th>
-            <th>Category</th>
-            <th>Description</th>
-            <th>Amount</th>
+            <th>Fecha</th>
+            <th>Viaje</th>
+            <th>Pagado por</th>
+            <th>Categoría</th>
+            <th>Descripción</th>
+            <th>Monto</th>
             <th></th>
           </tr>
         </thead>
@@ -521,7 +528,7 @@
       </table>
       <div class="empty-state" id="emptyState" style="display:none">
         <div class="empty-icon">🗺️</div>
-        <div>No expenses logged yet.<br/>Add your first entry above.</div>
+        <div>Todavía no hay gastos registrados.<br/>Agregá el primero arriba.</div>
       </div>
     </div>
   </div>
@@ -549,7 +556,7 @@
       setTimeout(() => screen.style.display = 'none', 400);
       loadExpenses();
     } else {
-      document.getElementById('loginError').textContent = 'Incorrect password. Try again.';
+      document.getElementById('loginError').textContent = 'Contraseña incorrecta. Intentá de nuevo.';
       document.getElementById('passwordInput').value = '';
       document.getElementById('passwordInput').focus();
     }
@@ -564,7 +571,6 @@
   if (checkAuth()) {
     document.getElementById('loginScreen').style.display = 'none';
   } else {
-    // Don't load expenses until authenticated
     document.getElementById('loadingState').style.display = 'none';
   }
 
@@ -575,7 +581,6 @@
     'Prefer': 'return=representation'
   };
 
-  // Set today's date
   document.getElementById('date').valueAsDate = new Date();
 
   function showToast(msg, isError = false) {
@@ -586,17 +591,17 @@
   }
 
   function getCatClass(cat) {
-    const map = { food:'cat-food', transport:'cat-transport', accommodation:'cat-accommodation', activities:'cat-activities', shopping:'cat-shopping', other:'cat-other' };
+    const map = { comida:'cat-food', transporte:'cat-transport', alojamiento:'cat-accommodation', actividades:'cat-activities', compras:'cat-shopping', otro:'cat-other' };
     return map[cat] || 'cat-other';
   }
 
   function formatDate(d) {
-    return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return new Date(d + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'short', year: 'numeric' });
   }
 
   function formatAmount(amount, currency) {
-    const symbols = { USD:'$', EUR:'€', GBP:'£', JPY:'¥', ARS:'$', BRL:'R$', MXN:'$' };
-    return `${symbols[currency] || ''}${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+    const symbols = { ARS:'$', USD:'US$', EUR:'€', BRL:'R$', UYU:'$U', CLP:'$', GBP:'£' };
+    return `${symbols[currency] || ''}${parseFloat(amount).toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
   }
 
   async function loadExpenses() {
@@ -607,8 +612,8 @@
       renderExpenses(data);
     } catch (e) {
       console.error(e);
-      document.getElementById('loadingState').textContent = 'Failed to load expenses.';
-      showToast('Could not load expenses. Check your Supabase setup.', true);
+      document.getElementById('loadingState').textContent = 'Error al cargar los gastos.';
+      showToast('No se pudieron cargar los gastos. Revisá la configuración de Supabase.', true);
     }
   }
 
@@ -617,17 +622,16 @@
 
     if (!data.length) {
       document.getElementById('emptyState').style.display = 'block';
-      document.getElementById('countBadge').textContent = '0 entries';
+      document.getElementById('countBadge').textContent = '0 gastos';
       return;
     }
 
-    // Summary
     const trips = [...new Set(data.map(e => e.trip_name))];
     document.getElementById('totalCount').textContent = data.length;
     document.getElementById('tripsCount').textContent = trips.length;
     document.getElementById('latestTrip').textContent = data[0].trip_name;
     document.getElementById('summaryBar').style.display = 'flex';
-    document.getElementById('countBadge').textContent = `${data.length} entr${data.length === 1 ? 'y' : 'ies'}`;
+    document.getElementById('countBadge').textContent = `${data.length} gasto${data.length === 1 ? '' : 's'}`;
 
     const tbody = document.getElementById('expenseBody');
     tbody.innerHTML = '';
@@ -637,6 +641,7 @@
       tr.innerHTML = `
         <td>${formatDate(exp.date)}</td>
         <td>${exp.trip_name}</td>
+        <td style="font-weight:500">${exp.paid_by || '—'}</td>
         <td><span class="cat-badge ${getCatClass(exp.category)}">${exp.category}</span></td>
         <td style="color:var(--muted)">${exp.description || '—'}</td>
         <td class="amount-cell">${formatAmount(exp.amount, exp.currency)}</td>
@@ -649,14 +654,14 @@
   }
 
   async function deleteExpense(id) {
-    if (!confirm('Delete this expense?')) return;
+    if (!confirm('¿Eliminar este gasto?')) return;
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/expenses?id=eq.${id}`, { method: 'DELETE', headers });
       if (!res.ok) throw new Error();
-      showToast('Expense deleted.');
+      showToast('Gasto eliminado.');
       loadExpenses();
     } catch {
-      showToast('Could not delete expense.', true);
+      showToast('No se pudo eliminar el gasto.', true);
     }
   }
 
@@ -664,10 +669,11 @@
     e.preventDefault();
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
-    btn.textContent = 'Saving...';
+    btn.textContent = 'Guardando...';
 
     const payload = {
       trip_name: document.getElementById('trip_name').value.trim(),
+      paid_by: document.getElementById('paid_by').value.trim(),
       category: document.getElementById('category').value,
       amount: parseFloat(document.getElementById('amount').value),
       currency: document.getElementById('currency').value,
@@ -682,17 +688,17 @@
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error(await res.text());
-      showToast('Expense logged ✓');
+      showToast('Gasto registrado ✓');
       document.getElementById('amount').value = '';
       document.getElementById('description').value = '';
       document.getElementById('emptyState').style.display = 'none';
       loadExpenses();
     } catch (err) {
       console.error(err);
-      showToast('Failed to save. Check console for details.', true);
+      showToast('Error al guardar. Revisá la consola.', true);
     } finally {
       btn.disabled = false;
-      btn.textContent = '+ Log Expense';
+      btn.textContent = '+ Registrar Gasto';
     }
   });
 
