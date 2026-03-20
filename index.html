@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trip Expenses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #1a1612;
+      --paper: #f5f0e8;
+      --cream: #ede8dc;
+      --accent: #c84b2f;
+      --gold: #c9963a;
+      --muted: #8a8070;
+      --border: #d4cfc4;
+    }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 27px, var(--border) 27px, var(--border) 28px);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      margin-bottom: 48px;
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 24px;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .stamp {
+      display: inline-block;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+      padding: 4px 10px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    /* FORM */
+    .card {
+      background: var(--cream);
+      border: 1.5px solid var(--border);
+      padding: 32px;
+      margin-bottom: 40px;
+      animation: fadeUp 0.6s 0.1s ease both;
+      position: relative;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 6px; left: 6px;
+      right: -6px; bottom: -6px;
+      border: 1px solid var(--border);
+      z-index: -1;
+    }
+
+    .card-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.1rem;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-bottom: 2px solid var(--ink);
+      padding: 10px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    textarea { resize: vertical; min-height: 70px; }
+
+    .amount-wrap { position: relative; }
+    .amount-wrap input { padding-left: 36px; }
+    .currency-symbol {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+
+    .btn {
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      padding: 14px 32px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 8px;
+    }
+
+    .btn:hover { background: var(--accent); }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled { background: var(--muted); cursor: not-allowed; }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 14px 22px;
+      font-size: 12px;
+      letter-spacing: 1px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: all 0.3s ease;
+      z-index: 999;
+      border-left: 3px solid var(--accent);
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { border-left-color: #e74c3c; }
+
+    /* TABLE */
+    .expenses-section {
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+    }
+
+    .count-badge {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .table-wrap {
+      border: 1.5px solid var(--border);
+      overflow-x: auto;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+
+    thead { background: var(--ink); color: var(--paper); }
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 9px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: var(--cream); }
+    tbody tr:last-child { border-bottom: none; }
+
+    td { padding: 12px 16px; color: var(--ink); }
+
+    .cat-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border: 1px solid currentColor;
+    }
+
+    .cat-food { color: #b25a1a; }
+    .cat-transport { color: #1a6b8a; }
+    .cat-accommodation { color: #5a1a8a; }
+    .cat-activities { color: #1a8a5a; }
+    .cat-shopping { color: #8a5a1a; }
+    .cat-other { color: var(--muted); }
+
+    .amount-cell { font-weight: 500; color: var(--accent); }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .empty-icon { font-size: 2rem; margin-bottom: 12px; opacity: 0.4; }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 2px 6px;
+      transition: color 0.2s;
+    }
+    .delete-btn:hover { color: var(--accent); }
+
+    .summary-bar {
+      display: flex;
+      gap: 24px;
+      background: var(--ink);
+      color: var(--paper);
+      padding: 16px 24px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .summary-item { display: flex; flex-direction: column; gap: 2px; }
+    .summary-label { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.6; }
+    .summary-value { font-family: 'Playfair Display', serif; font-size: 1.3rem; }
+
+    .loading { text-align: center; padding: 32px; color: var(--muted); font-size: 11px; letter-spacing: 2px; }
+
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* LOGIN SCREEN */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      background: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeDown 0.4s ease both;
+    }
+
+    #loginScreen.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .login-box {
+      background: var(--paper);
+      border: 1.5px solid var(--border);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 380px;
+      position: relative;
+      text-align: center;
+    }
+
+    .login-box::before {
+      content: '';
+      position: absolute;
+      top: 8px; left: 8px;
+      right: -8px; bottom: -8px;
+      border: 1px solid rgba(255,255,255,0.15);
+      z-index: -1;
+    }
+
+    .login-stamp {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+      padding: 3px 10px;
+      margin-bottom: 20px;
+    }
+
+    .login-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+
+    .login-sub {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      margin-bottom: 32px;
+      text-transform: uppercase;
+    }
+
+    .login-field { position: relative; margin-bottom: 16px; }
+
+    .login-field input {
+      width: 100%;
+      text-align: center;
+      letter-spacing: 3px;
+      font-size: 14px;
+    }
+
+    .login-error {
+      font-size: 10px;
+      color: var(--accent);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      min-height: 16px;
+    }
+
+    .login-btn {
+      width: 100%;
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      padding: 14px;
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .login-btn:hover { background: var(--accent); }
+
+    @media (max-width: 560px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .card { padding: 20px; }
+      .summary-bar { gap: 16px; }
+    }
+  </style>
+</head>
+<body>
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-stamp">Private</div>
+    <div class="login-title">Trip Expenses</div>
+    <p class="login-sub">Enter password to continue</p>
+    <div class="login-field">
+      <input type="password" id="passwordInput" placeholder="••••••••••••" autocomplete="current-password" />
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <button class="login-btn" id="loginBtn">Unlock →</button>
+  </div>
+</div>
+
+<div class="page">
+  <header>
+    <div class="stamp">Expense Ledger</div>
+    <h1>Trip Expenses</h1>
+    <p class="subtitle">Track every penny, every adventure</p>
+  </header>
+
+  <div class="card">
+    <div class="card-title">New Entry</div>
+    <form id="expenseForm">
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="field">
+          <label>Trip Name</label>
+          <input type="text" id="trip_name" placeholder="e.g. Tokyo 2025" required />
+        </div>
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="date" required />
+        </div>
+      </div>
+      <div class="grid-3" style="margin-bottom:16px">
+        <div class="field">
+          <label>Amount</label>
+          <div class="amount-wrap">
+            <span class="currency-symbol">$</span>
+            <input type="number" id="amount" placeholder="0.00" step="0.01" min="0" required />
+          </div>
+        </div>
+        <div class="field">
+          <label>Currency</label>
+          <select id="currency">
+            <option value="USD">USD $</option>
+            <option value="EUR">EUR €</option>
+            <option value="GBP">GBP £</option>
+            <option value="JPY">JPY ¥</option>
+            <option value="ARS">ARS $</option>
+            <option value="BRL">BRL R$</option>
+            <option value="MXN">MXN $</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Category</label>
+          <select id="category">
+            <option value="food">🍜 Food & Drinks</option>
+            <option value="transport">✈️ Transport</option>
+            <option value="accommodation">🏨 Accommodation</option>
+            <option value="activities">🎭 Activities</option>
+            <option value="shopping">🛍️ Shopping</option>
+            <option value="other">📦 Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="field full" style="margin-bottom:20px">
+        <label>Description (optional)</label>
+        <textarea id="description" placeholder="What was this expense for?"></textarea>
+      </div>
+      <button type="submit" class="btn" id="submitBtn">+ Log Expense</button>
+    </form>
+  </div>
+
+  <div class="expenses-section">
+    <div class="section-header">
+      <div class="section-title">Expense Log</div>
+      <span class="count-badge" id="countBadge">loading...</span>
+    </div>
+
+    <div class="summary-bar" id="summaryBar" style="display:none">
+      <div class="summary-item">
+        <span class="summary-label">Total Entries</span>
+        <span class="summary-value" id="totalCount">0</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Trips Tracked</span>
+        <span class="summary-value" id="tripsCount">0</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-label">Latest Trip</span>
+        <span class="summary-value" id="latestTrip" style="font-size:1rem">—</span>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="loading" id="loadingState">Loading expenses...</div>
+      <table id="expenseTable" style="display:none">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Trip</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="expenseBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <div class="empty-icon">🗺️</div>
+        <div>No expenses logged yet.<br/>Add your first entry above.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const SUPABASE_URL = 'https://okfduhjgyxoqqmnboiin.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rZmR1aGpneXhvcXFtbmJvaWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTAwMjYsImV4cCI6MjA4OTU2NjAyNn0.zXVf5T4p_pRAWiW7VTi9qRZyAr0xu3fCzWeF1D9xBiY';
+
+  // --- PASSWORD GATE ---
+  const PASS = 'martinbruder';
+
+  function checkAuth() {
+    return sessionStorage.getItem('te_auth') === '1';
+  }
+
+  function unlock() {
+    const val = document.getElementById('passwordInput').value;
+    if (val === PASS) {
+      sessionStorage.setItem('te_auth', '1');
+      const screen = document.getElementById('loginScreen');
+      screen.classList.add('hidden');
+      setTimeout(() => screen.style.display = 'none', 400);
+      loadExpenses();
+    } else {
+      document.getElementById('loginError').textContent = 'Incorrect password. Try again.';
+      document.getElementById('passwordInput').value = '';
+      document.getElementById('passwordInput').focus();
+    }
+  }
+
+  document.getElementById('loginBtn').addEventListener('click', unlock);
+  document.getElementById('passwordInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') unlock();
+    document.getElementById('loginError').textContent = '';
+  });
+
+  if (checkAuth()) {
+    document.getElementById('loginScreen').style.display = 'none';
+  } else {
+    // Don't load expenses until authenticated
+    document.getElementById('loadingState').style.display = 'none';
+  }
+
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': `Bearer ${SUPABASE_KEY}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+
+  // Set today's date
+  document.getElementById('date').valueAsDate = new Date();
+
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (isError ? ' error' : '');
+    setTimeout(() => t.className = 'toast', 3000);
+  }
+
+  function getCatClass(cat) {
+    const map = { food:'cat-food', transport:'cat-transport', accommodation:'cat-accommodation', activities:'cat-activities', shopping:'cat-shopping', other:'cat-other' };
+    return map[cat] || 'cat-other';
+  }
+
+  function formatDate(d) {
+    return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function formatAmount(amount, currency) {
+    const symbols = { USD:'$', EUR:'€', GBP:'£', JPY:'¥', ARS:'$', BRL:'R$', MXN:'$' };
+    return `${symbols[currency] || ''}${parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`;
+  }
+
+  async function loadExpenses() {
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/expenses?order=date.desc,created_at.desc`, { headers });
+      if (!res.ok) throw new Error(await res.text());
+      const data = await res.json();
+      renderExpenses(data);
+    } catch (e) {
+      console.error(e);
+      document.getElementById('loadingState').textContent = 'Failed to load expenses.';
+      showToast('Could not load expenses. Check your Supabase setup.', true);
+    }
+  }
+
+  function renderExpenses(data) {
+    document.getElementById('loadingState').style.display = 'none';
+
+    if (!data.length) {
+      document.getElementById('emptyState').style.display = 'block';
+      document.getElementById('countBadge').textContent = '0 entries';
+      return;
+    }
+
+    // Summary
+    const trips = [...new Set(data.map(e => e.trip_name))];
+    document.getElementById('totalCount').textContent = data.length;
+    document.getElementById('tripsCount').textContent = trips.length;
+    document.getElementById('latestTrip').textContent = data[0].trip_name;
+    document.getElementById('summaryBar').style.display = 'flex';
+    document.getElementById('countBadge').textContent = `${data.length} entr${data.length === 1 ? 'y' : 'ies'}`;
+
+    const tbody = document.getElementById('expenseBody');
+    tbody.innerHTML = '';
+
+    data.forEach(exp => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${formatDate(exp.date)}</td>
+        <td>${exp.trip_name}</td>
+        <td><span class="cat-badge ${getCatClass(exp.category)}">${exp.category}</span></td>
+        <td style="color:var(--muted)">${exp.description || '—'}</td>
+        <td class="amount-cell">${formatAmount(exp.amount, exp.currency)}</td>
+        <td><button class="delete-btn" onclick="deleteExpense('${exp.id}')">✕</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('expenseTable').style.display = 'table';
+  }
+
+  async function deleteExpense(id) {
+    if (!confirm('Delete this expense?')) return;
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/expenses?id=eq.${id}`, { method: 'DELETE', headers });
+      if (!res.ok) throw new Error();
+      showToast('Expense deleted.');
+      loadExpenses();
+    } catch {
+      showToast('Could not delete expense.', true);
+    }
+  }
+
+  document.getElementById('expenseForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+
+    const payload = {
+      trip_name: document.getElementById('trip_name').value.trim(),
+      category: document.getElementById('category').value,
+      amount: parseFloat(document.getElementById('amount').value),
+      currency: document.getElementById('currency').value,
+      description: document.getElementById('description').value.trim() || null,
+      date: document.getElementById('date').value
+    };
+
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/expenses`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error(await res.text());
+      showToast('Expense logged ✓');
+      document.getElementById('amount').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('emptyState').style.display = 'none';
+      loadExpenses();
+    } catch (err) {
+      console.error(err);
+      showToast('Failed to save. Check console for details.', true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '+ Log Expense';
+    }
+  });
+
+  if (checkAuth()) loadExpenses();
+</script>
+</body>
+</html>
