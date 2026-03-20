@@ -725,12 +725,18 @@
 
         <div class="field">
           <label>Foto del Ticket (opcional)</label>
-          <input type="file" id="ticketInput" accept="image/*" capture="environment" style="display:none"/>
           <canvas id="compressCanvas" style="display:none"></canvas>
-          <div class="ticket-upload-area" id="ticketUploadArea">
-            <div class="upload-icon">📎</div>
-            <div class="upload-label">Tocá para agregar foto del ticket</div>
-            <div class="upload-hint">Cámara o galería · Se comprime automáticamente</div>
+          <div id="ticketUploadArea" style="display:flex;gap:10px;">
+            <input type="file" id="ticketInputCamera" accept="image/*" capture="environment" style="display:none"/>
+            <input type="file" id="ticketInputGallery" accept="image/*" style="display:none"/>
+            <button type="button" id="btnCamera" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;">
+              <span style="font-size:1.8rem">📷</span>
+              Sacar foto
+            </button>
+            <button type="button" id="btnGallery" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;padding:16px 10px;background:var(--cream);border:1.5px solid var(--border);border-radius:12px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;">
+              <span style="font-size:1.8rem">🖼️</span>
+              Desde galería
+            </button>
           </div>
           <div class="ticket-preview" id="ticketPreview">
             <img id="ticketPreviewImg" src="" alt="Vista previa"/>
@@ -849,7 +855,7 @@
   let pendingTicketBlob = null;
   function showUploadArea() {
     pendingTicketBlob = null;
-    document.getElementById('ticketUploadArea').style.display = 'block';
+    document.getElementById('ticketUploadArea').style.display = 'flex';
     document.getElementById('ticketPreview').style.display = 'none';
   }
   function showPreview(blob, url) {
@@ -858,16 +864,18 @@
     document.getElementById('ticketUploadArea').style.display = 'none';
     document.getElementById('ticketPreview').style.display = 'block';
   }
-  document.getElementById('ticketUploadArea').addEventListener('click', () => document.getElementById('ticketInput').click());
-  document.getElementById('changeTicketBtn').addEventListener('click', () => document.getElementById('ticketInput').click());
+  document.getElementById('btnCamera').addEventListener('click', () => document.getElementById('ticketInputCamera').click());
+  document.getElementById('btnGallery').addEventListener('click', () => document.getElementById('ticketInputGallery').click());
+  document.getElementById('changeTicketBtn').addEventListener('click', () => document.getElementById('ticketInputGallery').click());
   document.getElementById('removeTicketBtn').addEventListener('click', showUploadArea);
-  document.getElementById('ticketInput').addEventListener('change', async e => {
-    const file = e.target.files[0];
+
+  async function handleTicketFile(file) {
     if (!file) return;
     const blob = await compressImage(file);
     showPreview(blob, URL.createObjectURL(blob));
-    e.target.value = '';
-  });
+  }
+  document.getElementById('ticketInputCamera').addEventListener('change', e => { handleTicketFile(e.target.files[0]); e.target.value = ''; });
+  document.getElementById('ticketInputGallery').addEventListener('change', e => { handleTicketFile(e.target.files[0]); e.target.value = ''; });
 
   async function uploadTicket(blob) {
     const filename = `ticket_${Date.now()}.jpg`;
