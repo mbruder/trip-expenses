@@ -764,10 +764,11 @@
   <div class="topbar">
     <div>
       <div class="topbar-title">Resumen</div>
-      <div class="topbar-sub">Por categoría</div>
+      <div class="topbar-sub" id="resumenSub">Total general</div>
     </div>
   </div>
-  <div id="resumenContent" style="padding:16px; flex:1; overflow-y:auto;"></div>
+  <div class="filter-bar" id="filterBarResumen"></div>
+  <div id="resumenContent" style="padding:16px 16px 24px; flex:1; overflow-y:auto;"></div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -988,40 +989,132 @@
   }
 
   // ── RESUMEN ──
+  let activeTripResumen = 'todos';
+
   function renderResumen() {
     const el = document.getElementById('resumenContent');
     if (!allExpenses.length) { el.innerHTML = '<p style="color:var(--muted);text-align:center;padding:40px 0">Sin datos todavía</p>'; return; }
 
-    const byCat = {};
-    allExpenses.forEach(e => {
-      if (!byCat[e.category]) byCat[e.category] = { total: 0, count: 0, currency: e.currency };
-      byCat[e.category].total += parseFloat(e.amount);
-      byCat[e.category].count++;
+    // Build trip filter chips
+    const trips = [...new Set(allExpenses.map(e => e.trip_name))];
+    const filterBar = document.getElementById('filterBarResumen');
+    filterBar.innerHTML = '';
+    const allChip = document.createElement('button');
+    allChip.className = 'filter-chip' + (activeTripResumen === 'todos' ? ' active' : '');
+    allChip.textContent = 'Todos';
+    allChip.onclick = () => { activeTripResumen = 'todos'; renderResumen(); };
+    filterBar.appendChild(allChip);
+    trips.forEach(trip => {
+      const chip = document.createElement('button');
+      chip.className = 'filter-chip' + (activeTripResumen === trip ? ' active' : '');
+      chip.textContent = trip;
+      chip.onclick = () => { activeTripResumen = trip; renderResumen(); };
+      filterBar.appendChild(chip);
     });
 
-    const total = Object.values(byCat).reduce((s, c) => s + c.total, 0);
+    const data = activeTripResumen === 'todos' ? allExpenses : allExpenses.filter(e => e.trip_name === activeTripResumen);
+    document.getElementById('resumenSub').textContent = activeTripResumen === 'todos' ? 'Total general' : activeTripResumen;
 
-    let html = '<div style="display:flex;flex-direction:column;gap:12px">';
-    Object.entries(byCat).sort((a,b) => b[1].total - a[1].total).forEach(([cat, data]) => {
-      const pct = Math.round(data.total / total * 100);
+    // Group by currency for grand total
+    const byCurrency = {};
+    data.forEach(e => {
+      const c = e.currency || 'ARS';
+      byCurrency[c] = (byCurrency[c] || 0) + parseFloat(e.amount);
+    });
+
+    // By category
+    const byCat = {};
+    data.forEach(e => {
+      if (!byCat[e.category]) byCat[e.category] = {};
+      const c = e.currency || 'ARS';
+      if (!byCat[e.category][c]) byCat[e.category][c] = { total: 0, count: 0 };
+      byCat[e.category][c].total += parseFloat(e.amount);
+      byCat[e.category][c].count++;
+    });
+
+    // By person
+    const byPerson = {};
+    data.forEach(e => {
+      const p = e.paid_by || 'Sin nombre';
+      if (!byPerson[p]) byPerson[p] = {};
+      const c = e.currency || 'ARS';
+      if (!byPerson[p][c]) byPerson[p][c] = { total: 0, count: 0 };
+      byPerson[p][c].total += parseFloat(e.amount);
+      byPerson[p][c].count++;
+    });
+
+    const formatAmt = (amount, currency) => {
+      const syms = { ARS:'$', USD:'US$', EUR:'€', BRL:'R$', UYU:'$U', CLP:'$', GBP:'£' };
+      return `${syms[currency]||''}${parseFloat(amount).toLocaleString('es-AR', { minimumFractionDigits:2, maximumFractionDigits:2 })} ${currency}`;
+    };
+
+    const totalAmounts = Object.entries(byCurrency).map(([c, t]) => formatAmt(t, c)).join(' + ');
+    const maxCatTotal = Math.max(...Object.values(byCat).map(cv => Object.values(cv).reduce((s,v)=>s+v.total,0)));
+
+    let html = '';
+
+    // ── GRAND TOTAL CARD ──
+    html += `
+      <div style="background:var(--ink);color:var(--paper);border-radius:16px;padding:20px;margin-bottom:20px">
+        <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.6;margin-bottom:6px">Total gastado</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;line-height:1.2">${totalAmounts}</div>
+        <div style="font-size:12px;opacity:0.5;margin-top:6px">${data.length} gasto${data.length !== 1 ? 's' : ''} · ${trips.length > 1 && activeTripResumen === 'todos' ? trips.length + ' viajes' : (activeTripResumen === 'todos' ? '1 viaje' : activeTripResumen)}</div>
+      </div>
+    `;
+
+    // ── BY CATEGORY ──
+    html += `<div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Por categoría</div>`;
+    html += `<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">`;
+    Object.entries(byCat).sort((a,b) => {
+      const ta = Object.values(a[1]).reduce((s,v)=>s+v.total,0);
+      const tb = Object.values(b[1]).reduce((s,v)=>s+v.total,0);
+      return tb - ta;
+    }).forEach(([cat, currencies]) => {
+      const catTotal = Object.values(currencies).reduce((s,v)=>s+v.total,0);
+      const catCount = Object.values(currencies).reduce((s,v)=>s+v.count,0);
+      const pct = Math.round(catTotal / maxCatTotal * 100);
       const color = catColors[cat] || '#999';
+      const amountsStr = Object.entries(currencies).map(([c,v]) => formatAmt(v.total, c)).join(' · ');
       html += `
-        <div style="background:var(--cream);border-radius:12px;padding:16px;border:1px solid var(--border)">
+        <div style="background:var(--cream);border-radius:12px;padding:14px 16px;border:1px solid var(--border)">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
             <div style="display:flex;align-items:center;gap:8px">
-              <span style="width:10px;height:10px;border-radius:50%;background:${color};display:inline-block"></span>
+              <span style="width:10px;height:10px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0"></span>
               <span style="font-weight:600;text-transform:capitalize">${cat}</span>
             </div>
-            <span style="font-weight:700;color:var(--accent)">${data.total.toLocaleString('es-AR', {minimumFractionDigits:2})} ${data.currency}</span>
+            <span style="font-weight:700;color:var(--accent);font-size:13px">${amountsStr}</span>
           </div>
-          <div style="background:var(--border);border-radius:4px;height:6px;overflow:hidden">
-            <div style="background:${color};height:100%;width:${pct}%;border-radius:4px;transition:width 0.5s ease"></div>
+          <div style="background:var(--border);border-radius:4px;height:5px;overflow:hidden">
+            <div style="background:${color};height:100%;width:${pct}%;border-radius:4px"></div>
           </div>
-          <div style="font-size:12px;color:var(--muted);margin-top:6px">${data.count} gasto${data.count !== 1 ? 's' : ''} · ${pct}% del total</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:5px">${catCount} gasto${catCount !== 1 ? 's' : ''}</div>
         </div>
       `;
     });
-    html += '</div>';
+    html += `</div>`;
+
+    // ── BY PERSON ──
+    html += `<div style="font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Por persona</div>`;
+    html += `<div style="display:flex;flex-direction:column;gap:10px">`;
+    Object.entries(byPerson).sort((a,b) => {
+      const ta = Object.values(a[1]).reduce((s,v)=>s+v.total,0);
+      const tb = Object.values(b[1]).reduce((s,v)=>s+v.total,0);
+      return tb - ta;
+    }).forEach(([person, currencies]) => {
+      const personCount = Object.values(currencies).reduce((s,v)=>s+v.count,0);
+      const amountsStr = Object.entries(currencies).map(([c,v]) => formatAmt(v.total, c)).join(' · ');
+      html += `
+        <div style="background:var(--cream);border-radius:12px;padding:14px 16px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:600">${person}</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px">${personCount} gasto${personCount !== 1 ? 's' : ''}</div>
+          </div>
+          <div style="font-weight:700;color:var(--accent);font-size:13px;text-align:right">${amountsStr}</div>
+        </div>
+      `;
+    });
+    html += `</div>`;
+
     el.innerHTML = html;
   }
 
