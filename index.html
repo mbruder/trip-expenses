@@ -6,22 +6,22 @@
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="Gastos"/>
-  <meta name="theme-color" content="#1a1612"/>
-  <title>Gastos de Viaje</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <meta name="apple-mobile-web-app-title" content="ENE EME"/>
+  <meta name="theme-color" content="#111111"/>
+  <title>ENE EME — Gastos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
     :root {
-      --ink: #1a1612;
-      --paper: #f5f0e8;
-      --cream: #ede8dc;
-      --accent: #c84b2f;
-      --accent2: #e05c3a;
-      --gold: #c9963a;
-      --muted: #8a8070;
-      --border: #d4cfc4;
+      --ink: #111111;
+      --paper: #f8f8f6;
+      --cream: #eeeeee;
+      --accent: #111111;
+      --accent2: #333333;
+      --gold: #555555;
+      --muted: #888888;
+      --border: #dddddd;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --safe-top: env(safe-area-inset-top, 0px);
       --nav-h: 64px;
@@ -67,7 +67,7 @@
       flex-shrink: 0;
     }
     .topbar-title {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Bebas Neue', sans-serif;
       font-size: 1.3rem;
       font-weight: 700;
     }
@@ -135,7 +135,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 16px rgba(200,75,47,0.45);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.35);
       z-index: 90;
       transition: transform 0.15s, background 0.2s;
     }
@@ -157,7 +157,7 @@
     }
     .summary-chip:last-child { border-right: none; }
     .summary-chip-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
-    .summary-chip-val { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; margin-top: 2px; }
+    .summary-chip-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; font-weight: 700; margin-top: 2px; }
 
     /* ── EXPENSE CARDS ── */
     .expenses-list {
@@ -213,11 +213,11 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .dot-comida { background: #b25a1a; }
-    .dot-transporte { background: #1a6b8a; }
-    .dot-alojamiento { background: #5a1a8a; }
-    .dot-actividades { background: #1a8a5a; }
-    .dot-compras { background: #8a5a1a; }
+    .dot-comida { background: #222222; }
+    .dot-transporte { background: #444444; }
+    .dot-alojamiento { background: #666666; }
+    .dot-actividades { background: #888888; }
+    .dot-compras { background: #aaaaaa; }
     .dot-otro { background: var(--muted); }
 
     .expense-card-right {
@@ -258,7 +258,7 @@
       text-align: center;
     }
     .empty-icon { font-size: 3rem; opacity: 0.35; }
-    .empty-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--ink); }
+    .empty-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; color: var(--ink); }
     .empty-sub { font-size: 13px; }
 
     .loading-state {
@@ -284,7 +284,7 @@
     .sheet-backdrop {
       position: absolute;
       inset: 0;
-      background: rgba(26,22,18,0.5);
+      background: rgba(0,0,0,0.6);
     }
 
     .sheet-panel {
@@ -315,7 +315,7 @@
       justify-content: space-between;
     }
     .sheet-title {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Bebas Neue', sans-serif;
       font-size: 1.2rem;
       font-weight: 700;
     }
@@ -446,7 +446,7 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(26,22,18,0.95);
+      background: rgba(0,0,0,0.96);
       z-index: 999;
       align-items: center;
       justify-content: center;
@@ -490,7 +490,7 @@
       text-align: center;
     }
     .login-logo { font-size: 2.5rem; margin-bottom: 16px; }
-    .login-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
+    .login-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; font-weight: 700; margin-bottom: 6px; }
     .login-sub { font-size: 13px; color: var(--muted); margin-bottom: 28px; }
     .login-input {
       width: 100%;
@@ -585,8 +585,8 @@
 <!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-card">
-    <div class="login-logo">✈️</div>
-    <div class="login-title">Gastos de Viaje</div>
+    <img src="data:image/png;base64,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" alt="ENE EME" style="width:160px;height:auto;object-fit:contain;margin-bottom:8px;"/>
+    <div class="login-title" style="font-size:1.1rem;letter-spacing:1px;margin-bottom:4px">GASTOS DE VIAJE</div>
     <p class="login-sub">Ingresá tu contraseña para continuar</p>
     <input class="login-input" type="password" id="passwordInput" placeholder="••••••••" autocomplete="current-password"/>
     <div class="login-error" id="loginError"></div>
@@ -603,9 +603,12 @@
 <!-- SCREEN: GASTOS -->
 <div class="screen active" id="screenGastos">
   <div class="topbar">
-    <div>
-      <div class="topbar-title">Mis Gastos</div>
-      <div class="topbar-sub">Registro de viaje</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="data:image/png;base64,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" alt="ENE EME" style="height:36px;object-fit:contain;filter:invert(1);"/>
+      <div>
+        <div class="topbar-title" style="font-size:1rem;letter-spacing:1px">Gastos de Viaje</div>
+        <div class="topbar-sub">Producciones S.A.</div>
+      </div>
     </div>
     <span class="topbar-badge" id="topBadge">0</span>
   </div>
@@ -762,9 +765,12 @@
 <!-- SCREEN: RESUMEN (rendered dynamically) -->
 <div class="screen" id="screenResumen">
   <div class="topbar">
-    <div>
-      <div class="topbar-title">Resumen</div>
-      <div class="topbar-sub" id="resumenSub">Total general</div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCABLAG0DASIAAhEBAxEB/8QAHAAAAgMBAQEBAAAAAAAAAAAABQgABgcEAgMB/8QAORAAAQMDAwIEBQIEBAcAAAAAAQIDBAUGEQAHEgghEyIxURQVMkFhI4EJFnGRQlKhwRgkM2KStNL/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/8QAFBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AcvU1NZb1Cb00HaGiR35sdVQqkzPwcFtfErAxlSlYPFIyPtoNS1NKPtt1e1e5byp9BmWCkIqDwbaXGlEqTn74UnCgPv3GhNS62Z8SoyYgsKMsMvLb5fMFDPEkZ+j8aBztTSf0nrKnTqDWambGjoNObaWEfHk8+bgR68O2M50NY64ZnipL+3zJaz5uFRIP7ZRoN56od2X9o7Ej1eDTUzp86UI0ZLhIbQcFRUrH4BwPfXP0r7vTN3LOnVCp01qDPp8kMO+CSW3AU5Chn0Prkaom8+8Ni3n03IuxdsJr0B6c3Gfp8l7wXIz3rkLAOCPsR6g6nTvudZ1vdOtfu6BarNv0+kyFgxW5JdXKdKU8crUASokgfjQM5qaVvbfqguW9YtfnxbAjsU+h052dKkKnKI8o8rY8n1KP+gOqcnrfqSjhO30cn8VBX/xoHV1NKRdHWBPotIt6d/I8d01eAZZQZxHhkOrb4/R3+jP768WX1q06fXo0G5bPXTIbywhUpiX4vhZ9CUFIyP6HQN1qa+cV9mVFakx3EuMuoC21j0UkjIOvpoJpSeuzauv3fXqFXLbW1OmpjLjmmeKlL60pUCVtpJ8wHLuB+NNtpdOqTYq89z7jgV63bqiw1QWC0xEf5thBJypQWjJyT+NAt21m7t27f3nRLWvC3afKZpkhEUNS4CES4iVeU8HAAodj6H10U69bWtq176oDVs0eJTGZdOW+8I6OIcWXD5j+daBtP0hV6LeMW4Nw7ghSmor6X/h4ji3VPqScjktYGBkDV26s9hLp3auqj1WgVGlRGYUJUdxMtawoqKyrtxSe2NBlm41pW1Suh6h3FTaLDi1aofCJmS20YceHiLOFH79wP7aXOJda423M20PktPcTMmolfMHGsyG+IxwQr7A/fT63xstcdc6X6LtdFn05FWgFguPrWrwTwUonBCc/cfbWYR+kSvr2lk0KZUqP/MbdTEqFJQtzwvCKQlaFHjnvgEdj6fnQ==" alt="ENE EME" style="height:30px;object-fit:contain;filter:invert(1);"/>
+      <div>
+        <div class="topbar-title" style="font-size:1rem;letter-spacing:1px">Resumen</div>
+        <div class="topbar-sub" id="resumenSub">Total general</div>
+      </div>
     </div>
   </div>
   <div class="filter-bar" id="filterBarResumen"></div>
@@ -776,7 +782,7 @@
 <script>
   const SUPABASE_URL = 'https://okfduhjgyxoqqmnboiin.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rZmR1aGpneXhvcXFtbmJvaWluIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5OTAwMjYsImV4cCI6MjA4OTU2NjAyNn0.zXVf5T4p_pRAWiW7VTi9qRZyAr0xu3fCzWeF1D9xBiY';
-  const PASS = 'martinbruder';
+  const PASS = 'ene123@';
   const headers = { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
 
   let allExpenses = [];
@@ -895,7 +901,7 @@
     const syms = { ARS:'$', USD:'US$', EUR:'€', BRL:'R$', UYU:'$U', CLP:'$', GBP:'£' };
     return `${syms[currency]||''}${parseFloat(amount).toLocaleString('es-AR', { minimumFractionDigits:2, maximumFractionDigits:2 })} ${currency}`;
   }
-  const catColors = { comida:'#b25a1a', transporte:'#1a6b8a', alojamiento:'#5a1a8a', actividades:'#1a8a5a', compras:'#8a5a1a', otro:'#8a8070' };
+  const catColors = { comida:'#222222', transporte:'#444444', alojamiento:'#666666', actividades:'#888888', compras:'#aaaaaa', otro:'#cccccc' };
 
   // ── LOAD ──
   async function loadExpenses() {
@@ -1057,7 +1063,7 @@
     html += `
       <div style="background:var(--ink);color:var(--paper);border-radius:16px;padding:20px;margin-bottom:20px">
         <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;opacity:0.6;margin-bottom:6px">Total gastado</div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;line-height:1.2">${totalAmounts}</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;font-weight:700;line-height:1.2">${totalAmounts}</div>
         <div style="font-size:12px;opacity:0.5;margin-top:6px">${data.length} gasto${data.length !== 1 ? 's' : ''} · ${trips.length > 1 && activeTripResumen === 'todos' ? trips.length + ' viajes' : (activeTripResumen === 'todos' ? '1 viaje' : activeTripResumen)}</div>
       </div>
     `;
